@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const UserController = require("../controllers/UserController");
-const validations = require("../middleWare/validationMW")
-const auth = require("../middleWare/jwt")
+const validations = require("../middleware/validationMW");
+const auth = require("../middleware/jwt");
 //const CheckoutController = require("../controllers/CheckoutController")
 
 //route=> /user
