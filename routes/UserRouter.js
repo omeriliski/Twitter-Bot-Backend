@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const UserController = require("../controllers/UserController");
 const validations = require("../middleware/validationMW");
-const auth = require("../middleware/jwt");
+const auth = require("../middleware/authMW");
 //const CheckoutController = require("../controllers/CheckoutController")
 
 //route=> /user

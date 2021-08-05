@@ -2,10 +2,13 @@ const express = require("express")
 require("dotenv").config();
 const app = express();
 const router = require("./routes/router");
-const connectDb = require("./models/ConnectDB");
+const connectDB = require("./models/ConnectDB");
 
-connectDb()
+connectDB();
+
+//req.body
 app.use(express.json());
+
 app.use("/api", router);
 
 if (process.env.NODE_ENV === "production") {

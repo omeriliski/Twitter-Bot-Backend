@@ -14,11 +14,11 @@ exports.userRegister = async (req, res) => {
     }
 
     // User exist check
-    const userData = await User.findOne({ userEmail });
+    const userData = await User.findOne({ userEmail }); //userEmail:userEmail
     if (userData) {
         return res
             .status(400)
-            .json({ errors: [{ message: "User already exists!!" }] });
+            .json({ errors: [{ message: "User already exists!!" }] }); // we can send it as res.json instead of res.send
     }
 
     // Password hash
