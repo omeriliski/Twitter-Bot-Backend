@@ -11,7 +11,9 @@ router.post("/register",validations.emailPasswordValidation,UserController.userR
 
 router.post("/login",validations.emailPasswordValidation,UserController.userLogin);
 
-router.get("/profile",auth,UserController.getProfile)
+router.get("/profile",auth,UserController.getProfile);
+
+router.post("/:id/update_user",auth,UserController.userUpdate);
 
 // router.post("/addProduct/:id",auth, CheckoutController.addProduct);
 

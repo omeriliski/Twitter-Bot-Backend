@@ -3,13 +3,15 @@ require("dotenv").config();
 const app = express();
 const router = require("./routes/router");
 const connectDB = require("./models/ConnectDB");
-
+const cors = require("cors");
 connectDB();
 
 //req.body
 app.use(express.json());
 
 app.use("/api", router);
+
+app.use(cors({origin: true, credentials: true}));;
 
 if (process.env.NODE_ENV === "production") {
   app.use(express.static("client/build"));
@@ -20,6 +22,6 @@ if (process.env.NODE_ENV === "production") {
 
 
 const port = process.env.PORT || 5000;
-app.listen(port, () => {
+app.listen(port, '192.168.0.123',() => {
   console.log(`I'm listening on port ${port}`);
 });

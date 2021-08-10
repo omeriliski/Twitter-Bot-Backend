@@ -4,7 +4,7 @@ const { validationResult } = require("express-validator");
 const jwt = require("jsonwebtoken")
 
 exports.userRegister = async (req, res) => {
-    const { userEmail, userPassword } = req.body;
+    const { userEmail, userPassword,apiKey,apiSecretKey,accessToken,accessTokenSecret,rtCount,likeCount,followCount } = req.body;
 
     // Field Validation
     const validationErr = validationResult(req);
@@ -29,6 +29,13 @@ exports.userRegister = async (req, res) => {
     const user = new User({
         userEmail,
         userPassword: newPassword,
+        apiKey,
+        apiSecretKey,
+        accessToken,
+        accessTokenSecret,
+        rtCount,
+        likeCount,
+        followCount
     });
     await user.save();
 
@@ -73,9 +80,32 @@ exports.userLogin = async (req, res) => {
     // res.send(token)
 };
 
-
-
-
 exports.getProfile = async (req, res) => {
     res.send(req.decodedUser);
+}
+
+exports.userUpdate = async (req,res) => {
+    try {
+        const user = await User.findOne({
+            where:{
+                id:req.params.id
+            }
+        });
+        console.log("user!!!!!!!!!!!!!!!!!!!!!:",user);
+        console.log("req.params.id",req.params.id);
+        user.userEmail = req.body.userEmail;
+        user.userPassword = req.body.userPassword;
+        user.apiKey = req.body.apiKey;
+        user.apiSecretKey = req.body.apiSecretKey;
+        user.accessToken = req.body.accessToken;
+        user.accessTokenSecret = req.body.accessToken;
+        user.rtCount = req.body.rtCount;
+        user.likeCount = req.body.likeCount;
+        user.followCount = req.body.followCount;
+        await user.save();
+        
+        res.send(user);
+    } catch (error) {
+        res.send(error);
+    }
 }
