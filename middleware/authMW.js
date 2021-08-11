@@ -3,7 +3,7 @@ var jwt = require("jsonwebtoken");
 const authMiddleware = (req, res, next) => {
   //get Token
   const token = req.header("token");
-
+  console.log("auth token!!!!!!!!!!!", token)
   //Return error if token doesn't exist
   if (!token) {
     return res.status(401).json({ msg: "No Token" });
@@ -15,8 +15,7 @@ const authMiddleware = (req, res, next) => {
       return res.status(401).json({ msg: "Invalid Token" });
     } else {
       req.decodedUser = decodedToken.userData;
-      console.log(decodedToken.userData);
-      console.log("......................................")
+      console.log("decodedToken.userData!!!!!!!!!!!!!!!!!!!!!!!!",decodedToken.userData);
       next();
     }
   });

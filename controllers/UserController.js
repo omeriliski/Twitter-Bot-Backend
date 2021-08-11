@@ -4,7 +4,7 @@ const { validationResult } = require("express-validator");
 const jwt = require("jsonwebtoken")
 
 exports.userRegister = async (req, res) => {
-    const { userEmail, userPassword,apiKey,apiSecretKey,accessToken,accessTokenSecret,rtCount,likeCount,followCount } = req.body;
+    const { userEmail, userPassword,apiKey,apiSecretKey,accessToken,accessTokenSecret,rtCount,likeCount,followCount,popularAccountsList } = req.body;
 
     // Field Validation
     const validationErr = validationResult(req);
@@ -35,7 +35,8 @@ exports.userRegister = async (req, res) => {
         accessTokenSecret,
         rtCount,
         likeCount,
-        followCount
+        followCount,
+        popularAccountsList
     });
     await user.save();
 
@@ -82,30 +83,28 @@ exports.userLogin = async (req, res) => {
 
 exports.getProfile = async (req, res) => {
     res.send(req.decodedUser);
+    //const user = await User.findById({ _id: req.params.id });
+    //res.send(user);
 }
 
 exports.userUpdate = async (req,res) => {
     try {
-        const user = await User.findOne({
-            where:{
-                id:req.params.id
-            }
-        });
-        console.log("user!!!!!!!!!!!!!!!!!!!!!:",user);
-        console.log("req.params.id",req.params.id);
-        user.userEmail = req.body.userEmail;
-        user.userPassword = req.body.userPassword;
+        const user = await User.findById({ _id: req.params.id })
+        
+        user.userEmail;
+        user.userPassword;
         user.apiKey = req.body.apiKey;
         user.apiSecretKey = req.body.apiSecretKey;
         user.accessToken = req.body.accessToken;
-        user.accessTokenSecret = req.body.accessToken;
+        user.accessTokenSecret = req.body.accessTokenSecret;
         user.rtCount = req.body.rtCount;
         user.likeCount = req.body.likeCount;
         user.followCount = req.body.followCount;
+        user.popularAccountsList = req.body.popularAccountsList;
         await user.save();
-        
+        console.log(user)
         res.send(user);
-    } catch (error) {
+        } catch (error) {
         res.send(error);
     }
 }
