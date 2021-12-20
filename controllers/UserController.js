@@ -2,6 +2,7 @@ const User = require("../models/UserModel");
 const bcrypt = require("bcryptjs");
 const { validationResult } = require("express-validator");
 const jwt = require("jsonwebtoken")
+var Twit = require('twit')
 
 exports.userRegister = async (req, res) => {
     const { userEmail, userPassword,apiKey,apiSecretKey,accessToken,accessTokenSecret,rtCount,likeCount,followCount,popularAccountsList } = req.body;
@@ -52,7 +53,8 @@ exports.userLogin = async (req, res) => {
         return res.status(400).json({ errors: validationErr.array() });
     }
     // User exist check
-    const userData = await User.findOne({ userEmail });
+    const userData = await User.findOne({ userEmail })
+    // console.log('userData :>> ', userData);
     if (!userData) {
         return res
             .status(400)

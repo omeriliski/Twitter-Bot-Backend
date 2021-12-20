@@ -1,17 +1,20 @@
 var Twit = require('twit')
 const axios = require("axios")
 
-let T = new Twit({
-    consumer_key: 'Nj15lkjs1eLHoChMeH9ZGErc6',
-    consumer_secret: 'opymeMuZnkvF428RLYWkeYC7g7ijv1TEyRvIjhp0WTvFv8iRUx',
-    access_token: '1096359974362640384-uG7YBLbM2G4iCgvuI3e1xGxiElXj4A',
-    access_token_secret: 'EAOyxHuR316RuEgKYN4FvuUeZW7SxxseX4BdN2u5efgEQ',
-    // AAAAAAAAAAAAAAAAAAAAABH19QAAAAAAw5wDFd8VzVeW%2FPio2nC03gA33UA%3D0BhhGzUyPnQu3Ci0VuoGvPsaNyxRBZZi3yNc0DDSn7mk3ckIyZ
-    //timeout_ms:           60*1000,  // optional HTTP request timeout to apply to all requests.
-    strictSSL: true, // optional - requires SSL certificates to be valid.
-});
-const bearerToken="AAAAAAAAAAAAAAAAAAAAABH19QAAAAAAw5wDFd8VzVeW%2FPio2nC03gA33UA%3D0BhhGzUyPnQu3Ci0VuoGvPsaNyxRBZZi3yNc0DDSn7mk3ckIyZ"
+const init = (user)=>{
+    const T = new Twit({
+        consumer_key: user.apiKey,
+        consumer_secret: user.apiSecretKey,
+        access_token: user.accessToken,
+        access_token_secret: user.accessTokenSecret,
+        // AAAAAAAAAAAAAAAAAAAAABH19QAAAAAAw5wDFd8VzVeW%2FPio2nC03gA33UA%3D0BhhGzUyPnQu3Ci0VuoGvPsaNyxRBZZi3yNc0DDSn7mk3ckIyZ
+        //timeout_ms:           60*1000,  // optional HTTP request timeout to apply to all requests.
+        strictSSL: true, // optional - requires SSL certificates to be valid.
+    })
+    return T;
+}
 
+const bearerToken="AAAAAAAAAAAAAAAAAAAAABH19QAAAAAAw5wDFd8VzVeW%2FPio2nC03gA33UA%3D0BhhGzUyPnQu3Ci0VuoGvPsaNyxRBZZi3yNc0DDSn7mk3ckIyZ"
 const getUserIdsByScreenName = (arr)=>{
     let url="https://api.twitter.com/1.1/users/lookup.json?screen_name=";
     arr.forEach((e)=>url+=e.substring(1)+",")
@@ -31,7 +34,8 @@ const getUserIdsByScreenName = (arr)=>{
     })
   }
 exports.twit = async (req, res) => {
-    const {text} = req.body;
+    const {text,activeUser} = req.body;
+    const T = init(activeUser);
     T.post('statuses/update', {
         status: text
     }, function (err, data, response) {
@@ -41,7 +45,7 @@ exports.twit = async (req, res) => {
 };
 
 //   retweet a tweet with id '343360866131001345'
-  const retweet=(id)=>{
+  const retweet=(id,T)=>{
     return new Promise((resolve,reject)=>{
       T.post('statuses/retweet/:id', { id: id }, function (err, data, response) {
           if(err){
@@ -52,16 +56,15 @@ exports.twit = async (req, res) => {
          else{
               console.log("Retweetted!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
               resolve(1);
-              res.send(data)
-              
          }
     }) 
   })
 }
 exports.followPopular = async (req,res) => {
-    const {arr} = req.body;
+    const {userData} = req.body;
+    const T = init(userData);
     let url="https://api.twitter.com/1.1/users/lookup.json?screen_name=";
-    arr.forEach((e)=>url+=e.substring(1)+",");
+    userData.popularAccountsList.forEach((e)=>url+=e.substring(1)+",");
     axios.get(url,{
         headers:{
           "Authorization":`bearer ${bearerToken}`
@@ -72,9 +75,9 @@ exports.followPopular = async (req,res) => {
         let stream = T.stream('statuses/filter', {follow: userIdsArr})
         console.log('userIdsArr :>> ', userIdsArr);
         stream.on('tweet', function (tweet) {
-            retweet(tweet.id_str);
+            retweet(tweet.id_str,T);
             //follow(tweet.user.screen_name);
-            console.log("retweeted PopulerPerson's Tweet");
+            console.log("retweeted PopulerPerson's Tweet",tweet.text);
         })
       })
       .catch(err=>{
