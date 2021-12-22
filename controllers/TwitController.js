@@ -25,9 +25,9 @@ const getUserIdsByScreenName = (arr)=>{
       }
     })
     .then((res)=>{
-        console.log('getUserIdsByScreenName :>> ', res.data.map(e=>e.id));
-        return res.data.map(e=>e.id)
-        
+        // console.log('getUserIdsByScreenName :>> ', res.data.map(e=>e.id));
+        // return res.data.map(e=>e.id)
+        return e
     })
     .catch(err=>{
       console.log('getUserIdsByScreenName err :>> ', err);
