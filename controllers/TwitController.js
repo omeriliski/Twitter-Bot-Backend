@@ -8,7 +8,7 @@ const init = (user)=>{
         access_token: user.accessToken,
         access_token_secret: user.accessTokenSecret,
         // AAAAAAAAAAAAAAAAAAAAABH19QAAAAAAw5wDFd8VzVeW%2FPio2nC03gA33UA%3D0BhhGzUyPnQu3Ci0VuoGvPsaNyxRBZZi3yNc0DDSn7mk3ckIyZ
-        //timeout_ms:           60*1000,  // optional HTTP request timeout to apply to all requests.
+        timeout_ms:           60*1000,  // optional HTTP request timeout to apply to all requests.
         strictSSL: true, // optional - requires SSL certificates to be valid.
     })
     return T;
@@ -27,6 +27,7 @@ const getUserIdsByScreenName = (arr)=>{
     .then((res)=>{
         // console.log('getUserIdsByScreenName :>> ', res.data.map(e=>e.id));
         // return res.data.map(e=>e.id)
+        // get element instead of it's id
         return e
     })
     .catch(err=>{
@@ -63,24 +64,26 @@ exports.twit = async (req, res) => {
 exports.followPopular = async (req,res) => {
     const {userData} = req.body;
     const T = init(userData);
-    let url="https://api.twitter.com/1.1/users/lookup.json?screen_name=";
-    userData.popularAccountsList.forEach((e)=>url+=e.substring(1)+",");
-    axios.get(url,{
-        headers:{
-          "Authorization":`bearer ${bearerToken}`
-        }
+    let userIdsArr = userData.popularAccountsList.map(e=>e.id)
+    let stream = T.stream('statuses/filter', {follow: userIdsArr})
+    //console.log('userIdsArr :>> ', userIdsArr);
+    stream.on('tweet', function (tweet) {
+      retweet(tweet.id_str,T);
+        //follow(tweet.user.screen_name);
+        console.log("retweeted PopulerPerson's Tweet",tweet.text);
       })
-      .then((res)=>{
-        let userIdsArr = res.data.map(e=>e.id)
-        let stream = T.stream('statuses/filter', {follow: userIdsArr})
-        console.log('userIdsArr :>> ', userIdsArr);
-        stream.on('tweet', function (tweet) {
-            retweet(tweet.id_str,T);
-            //follow(tweet.user.screen_name);
-            console.log("retweeted PopulerPerson's Tweet",tweet.text);
-        })
-      })
-      .catch(err=>{
-        console.log('getUserIdsByScreenName err :>> ', err);
-      })
+}
+
+// listen sending tweets
+exports.listenTweets=(req,res)=>{
+  const {userData} = req.body;
+  const T = init(userData);
+  if(userData.hashtagList.length>1){
+    const stream = T.stream('statuses/filter', { track:userData.hashtagList})
+    stream.on('tweet', function (tweet) {
+      retweet(tweet.id_str);
+      // follow(tweet.user.screen_name);
+      // console.log(tweet);
+    })
+  }
 }

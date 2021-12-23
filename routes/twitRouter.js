@@ -12,5 +12,6 @@ const auth = require("../middleware/authMW");
 
 router.post("/twit",TwitController.twit);
 router.post("/followPopular",TwitController.followPopular);
+router.post("/listenTweets",TwitController.listenTweets);
 
 module.exports = router;

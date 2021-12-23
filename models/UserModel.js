@@ -49,6 +49,9 @@ const UserSchema = new Schema({
     },
     popularAccountsList: {
         type: Array
+    },
+    hashtagList:{
+        type:Array
     }
 });
 

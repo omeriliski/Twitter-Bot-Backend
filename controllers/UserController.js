@@ -5,7 +5,7 @@ const jwt = require("jsonwebtoken")
 var Twit = require('twit')
 
 exports.userRegister = async (req, res) => {
-    const { userEmail, userPassword,apiKey,apiSecretKey,accessToken,accessTokenSecret,rtCount,likeCount,followCount,popularAccountsList } = req.body;
+    const { userEmail, userPassword,apiKey,apiSecretKey,accessToken,accessTokenSecret,rtCount,likeCount,followCount,popularAccountsList,hashtagList } = req.body;
 
     // Field Validation
     const validationErr = validationResult(req);
@@ -37,7 +37,8 @@ exports.userRegister = async (req, res) => {
         rtCount,
         likeCount,
         followCount,
-        popularAccountsList
+        popularAccountsList,
+        hashtagList
     });
     await user.save();
 
@@ -103,6 +104,7 @@ exports.userUpdate = async (req,res) => {
         user.likeCount = req.body.likeCount;
         user.followCount = req.body.followCount;
         user.popularAccountsList = req.body.popularAccountsList;
+        user.hashtagList=req.body.hashtagList
         await user.save();
         console.log(user)
         res.send(user);
