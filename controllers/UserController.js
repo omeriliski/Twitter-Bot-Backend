@@ -5,7 +5,8 @@ const jwt = require("jsonwebtoken")
 var Twit = require('twit')
 
 exports.userRegister = async (req, res) => {
-    const { userEmail, userPassword,apiKey,apiSecretKey,accessToken,accessTokenSecret,rtCount,likeCount,followCount,popularAccountsList,hashtagList } = req.body;
+    const { userEmail, userPassword,apiKey,apiSecretKey,accessToken,accessTokenSecret,rtCount,retweetedCount,
+        likeCount,likedCount,followCount,followedCount,popularAccountsList,hashtagList } = req.body;
 
     // Field Validation
     const validationErr = validationResult(req);
@@ -36,7 +37,10 @@ exports.userRegister = async (req, res) => {
         accessTokenSecret,
         rtCount,
         likeCount,
+        likedCount,
         followCount,
+        followedCount,
+        retweetedCount,
         popularAccountsList,
         hashtagList
     });
@@ -93,7 +97,6 @@ exports.getProfile = async (req, res) => {
 exports.userUpdate = async (req,res) => {
     try {
         const user = await User.findById({ _id: req.params.id })
-        
         user.userEmail;
         user.userPassword;
         user.apiKey = req.body.apiKey;
@@ -101,8 +104,11 @@ exports.userUpdate = async (req,res) => {
         user.accessToken = req.body.accessToken;
         user.accessTokenSecret = req.body.accessTokenSecret;
         user.rtCount = req.body.rtCount;
+        user.retweetedCount=req.body.retweetedCount;
         user.likeCount = req.body.likeCount;
+        user.likedCount=req.body.likedCount;
         user.followCount = req.body.followCount;
+        user.followedCount=req.body.followedCount;
         user.popularAccountsList = req.body.popularAccountsList;
         user.hashtagList=req.body.hashtagList
         await user.save();
@@ -110,5 +116,39 @@ exports.userUpdate = async (req,res) => {
         res.send(user);
         } catch (error) {
         res.send(error);
+    }
+}
+
+exports.userUpdateInternal = async (userData,res) => {
+    try {
+        // const user = await User.findById({ _id: req.params.id })
+        // user.userEmail;
+        // user.userPassword;
+        // user.apiKey = req.body.apiKey;
+        // user.apiSecretKey = req.body.apiSecretKey;
+        // user.accessToken = req.body.accessToken;
+        // user.accessTokenSecret = req.body.accessTokenSecret;
+        // user.rtCount = req.body.rtCount;
+        // user.retweetedCount=req.body.retweetedCount;
+        // user.likeCount = req.body.likeCount;
+        // user.likedCount=req.body.likedCount;
+        // user.followCount = req.body.followCount;
+        // user.followedCount=req.body.followedCount;
+        // user.popularAccountsList = req.body.popularAccountsList;
+        // user.hashtagList=req.body.hashtagList
+        const user = await User.findById({ _id: userData._id })
+        isNaN(user.retweetedCount) ? user.retweetedCount=1 : user.retweetedCount++ 
+        console.log('user.retweetedCount :>> ', user.retweetedCount);
+        await user.save();
+        console.log("userUpdateInternal, user updated")
+        try {
+            res.send("retweeted!!!");
+        } catch (error) {
+            console.log('*** userUpdateInternal res.sen error *** :>> ', error);
+        }
+        //res.send(user);
+        } catch (error) {
+        //res.send(error);
+        console.log("userUpdateInternal error",error)
     }
 }

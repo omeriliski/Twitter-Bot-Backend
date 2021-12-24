@@ -1,5 +1,6 @@
 var Twit = require('twit')
 const axios = require("axios")
+const {userUpdateInternal}=require("../controllers/UserController");
 
 const init = (user)=>{
     const T = new Twit({
@@ -46,7 +47,7 @@ exports.twit = async (req, res) => {
 };
 
 //   retweet a tweet with id '343360866131001345'
-  const retweet=(id,T)=>{
+  const retweet=(id,T,userData,res)=>{
     return new Promise((resolve,reject)=>{
       T.post('statuses/retweet/:id', { id: id }, function (err, data, response) {
           if(err){
@@ -55,7 +56,8 @@ exports.twit = async (req, res) => {
               //rt();
          } 
          else{
-              console.log("Retweetted!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+              userUpdateInternal(userData,res);
+              console.log("Retweeted!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
               resolve(1);
          }
     }) 
@@ -68,20 +70,21 @@ exports.followPopular = async (req,res) => {
     let stream = T.stream('statuses/filter', {follow: userIdsArr})
     //console.log('userIdsArr :>> ', userIdsArr);
     stream.on('tweet', function (tweet) {
-      retweet(tweet.id_str,T);
+      retweet(tweet.id_str,T,res);
         //follow(tweet.user.screen_name);
-        console.log("retweeted PopulerPerson's Tweet",tweet.text);
+        console.log("retweeted PopularPerson's Tweet",tweet.text);
       })
 }
 
 // listen sending tweets
 exports.listenTweets=(req,res)=>{
   const {userData} = req.body;
+  userData.retweetedCount=0;
   const T = init(userData);
   if(userData.hashtagList.length>1){
     const stream = T.stream('statuses/filter', { track:userData.hashtagList})
     stream.on('tweet', function (tweet) {
-      retweet(tweet.id_str);
+      retweet(tweet.id_str,T,userData,res);
       // follow(tweet.user.screen_name);
       // console.log(tweet);
     })

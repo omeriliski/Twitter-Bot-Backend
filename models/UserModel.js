@@ -39,11 +39,23 @@ const UserSchema = new Schema({
         type: Number,
         required: false,
     },
+    retweetedCount:{
+        type: Number,
+        required: false,
+    },
     likeCount: {
         type: Number,
         required: false,
     },
+    likedCount:{
+        type: Number,
+        required: false,
+    },
     followCount: {
+        type: Number,
+        required: false
+    },
+    followedCount: {
         type: Number,
         required: false
     },
