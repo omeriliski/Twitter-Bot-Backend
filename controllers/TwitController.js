@@ -47,15 +47,15 @@ exports.twit = async (req, res) => {
 };
 
 //   retweet a tweet with id '343360866131001345'
-  const retweet=(id,T,userData,res)=>{
+const retweet = (id,T,userData,res)=>{
     return new Promise((resolve,reject)=>{
       T.post('statuses/retweet/:id', { id: id }, function (err, data, response) {
           if(err){
               console.log('retweet err :>> ', err);
               resolve(0);
-              //rt();
          } 
          else{
+              //res.send("Retweeted!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
               userUpdateInternal(userData,res);
               console.log("Retweeted!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
               resolve(1);
@@ -67,13 +67,18 @@ exports.followPopular = async (req,res) => {
     const {userData} = req.body;
     const T = init(userData);
     let userIdsArr = userData.popularAccountsList.map(e=>e.id)
-    let stream = T.stream('statuses/filter', {follow: userIdsArr})
-    //console.log('userIdsArr :>> ', userIdsArr);
-    stream.on('tweet', function (tweet) {
-      retweet(tweet.id_str,T,res);
-        //follow(tweet.user.screen_name);
-        console.log("retweeted PopularPerson's Tweet",tweet.text);
+    try {
+      let stream = T.stream('statuses/filter', {follow: userIdsArr})
+      //console.log('userIdsArr :>> ', userIdsArr);
+      stream.on('tweet', function (tweet) {
+      retweet(tweet.id_str,T,userData,res);
+      //follow(tweet.user.screen_name);
+      //console.log("retweeted PopularPerson's Tweet",tweet.text);
       })
+    } catch (error) {
+      console.log("followPopular",error);
+    }
+    
 }
 
 // listen sending tweets

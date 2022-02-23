@@ -142,7 +142,7 @@ exports.userUpdateInternal = async (userData,res) => {
         await user.save();
         console.log("userUpdateInternal, user updated")
         try {
-            res.send("retweeted!!!");
+            res.send("userUpdateInternal retweeted***************************");
         } catch (error) {
             console.log('*** userUpdateInternal res.sen error *** :>> ', error);
         }
